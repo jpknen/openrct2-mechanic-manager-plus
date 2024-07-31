@@ -15,7 +15,7 @@ This is based on my other [Animated vandalism repairing plugin](https://github.c
 - Change mechanic job task's: `Inspect rides (IR), Fix rides (FR), Fix additions (FA)`
 - Possibility to give different color work clothes depending on the job 
 - Custom mechanic window and viewport
-- Etc.. (in progress)
+- Etc.. (development in progress)
 
 ### Notes:
 
