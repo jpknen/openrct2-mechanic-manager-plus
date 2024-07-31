@@ -1,21 +1,28 @@
-# Advanced mechanics
+# Mechanic manager +
 
-OpenRCT2 plugin for managering mechanics.
+An OpenRCT2 plugin for managering the mechanics.
 
-Player can give new order for mechanics (Fix additions).
+Brings up a new window and another way to manage mechanics which makes a faster way to edit mechanic job orders through the table/list view. 
 
-Based on [openrct2-animated-vandalism-repairing](https://github.com/jpknen/openrct2-animated-vandalism-repairing)
+Also this plugin gives to mechanics a new task opportunity `Fix additions` for repairing the vandalism.
 
-![openrct2-animated-vandalism-repairing-12-1111](https://github.com/user-attachments/assets/6ebfc1f3-67f5-475f-86c6-f963ff454683)
+Choosing the mechanic to fix addition, makes them stop on broken additions and play an random repairing animation.
+
+This is based on my other [Animated vandalism repairing plugin](https://github.com/jpknen/openrct2-animated-vandalism-repairing) and shares most of its source.
 
 ### Features:
-
-- Player can give mechanics orders `Inspect rides (IR), Fix rides (FR), Fix additions (FA)` and give them different uniform color depending on are they selected to fix additions
+- Add/delete mechanics
+- Change mechanic job task's: `Inspect rides (IR), Fix rides (FR), Fix additions (FA)`
+- Possibility to give different color work clothes depending on the job 
+- Custom mechanic window and viewport
+- Etc.. (in progress)
 
 ### Notes:
 
-Plugin works with OpenRCT2 `v0.4.12` or later.  
+Plugin works with OpenRCT2 `v0.4.12` or later.
+
+I do not recommend to use this and Animated vandalism repairing plugin same time.
 
 ### Install:
 
-Just copy the latest [release](https://github.com/jpknen/openrct2-advanced-mechanics/releases/) into to your OpenRCT2 plugin folder `C:/Users/[name]/Documents/OpenRCT2/plugin`
+Copy the latest [release](https://github.com/jpknen/openrct2-mechanic-manager-plus/releases/) into to your OpenRCT2 plugin folder `C:/Users/[name]/Documents/OpenRCT2/plugin`
