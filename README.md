@@ -8,14 +8,14 @@ Also this plugin gives to mechanics a new task opportunity `Fix additions` for r
 
 Choosing the mechanic to fix addition, makes them stop on broken additions and play an random repairing animation.
 
-This is based on my other [Animated vandalism repairing plugin](https://github.com/jpknen/openrct2-animated-vandalism-repairing) and shares most of its source.
+This is based on [Animated vandalism repairing plugin](https://github.com/jpknen/openrct2-animated-vandalism-repairing) and shares most of its logic.
 
 ### Features:
+- Mechanic manager window and custom mechanic windows
 - Add/delete mechanics
-- Change mechanic job task's: `Inspect rides (IR), Fix rides (FR), Fix additions (FA)`
-- Possibility to give different color work clothes depending on the job 
-- Custom mechanic window and viewport
-- Etc.. (development in progress)
+- Change mechanic job task's: `Inspect rides, Fix rides, Fix additions (vandalism)`
+- Option to skip vandalism fixing if mechanic is heading for the ride (currently works only for ride fixing, not inspecting)
+- Possibility to give different color work clothes depending on the job
 
 ### Notes:
 
