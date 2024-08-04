@@ -1,12 +1,12 @@
 // main.ts
 
 import { storage } from "./storage";
-import { occupiedTiles, workers } from "./classes";
-import { UpdateWorkersData, RepairAdditions, Release, IsTileOccupied } from "./logic"
+import { workers } from "./classes";
+import { UpdateWorkersData, RepairAdditions, SetWorkerStatus, Release, IsTileOccupied, DeleteWorkerData } from "./logic"
 import { mainWin } from "./ui/mainwin"
 
 export function main(): void {
-	
+
 	ui.registerMenuItem("Mechanic manager +", mainWin.open);
 
 	// first load to integrate in game workers to workersData
@@ -17,6 +17,7 @@ export function main(): void {
 		if (!storage.sharedStorage.get("enabled"))
 			return;
 
+		SetWorkerStatus()
 		RepairAdditions();
 
 	});
@@ -24,15 +25,13 @@ export function main(): void {
 	// then listen for staff & other changes
 	context.subscribe("action.execute", (e: GameActionEventArgs) => {
 
-		if (e.action == "staffhire" && 'peep' in e.result && "staffType" in e.args && e.args.staffType == 1){
+		if (e.action == "staffhire" && 'peep' in e.result && "staffType" in e.args && e.args.staffType == 1) {
 			workers.new(Number(e.result.peep));
 			mainWin.update();
 		}
-			
+
 		else if (e.action == "stafffire" && 'id' in e.args) {
-			workers.delete(Number(e.args.id));
-			occupiedTiles.delete(Number(e.args.id));
-			mainWin.update();
+			DeleteWorkerData(Number(e.args.id));
 		}
 
 		else if (e.action == "staffsetorders" || e.action == "staffsetname")

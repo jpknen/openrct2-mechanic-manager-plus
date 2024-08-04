@@ -1,6 +1,6 @@
 {
 	"name": "openrct2-mechanic-manager-plus",
-	"version": "0.0.1",
+	"version": "0.0.2b",
 	"type": "module",
 	"directories": {
 		"lib": "lib"

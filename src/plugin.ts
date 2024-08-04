@@ -4,7 +4,7 @@ import { main } from './main';
 
 registerPlugin({
 	name: "Mechanic manager plus",
-	version: "0.0.1",
+	version: "0.0.2b",
 	authors: ["jpknen"],
 	type: "local",
 	targetApiVersion: 94,
