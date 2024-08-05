@@ -35,7 +35,7 @@ export const userActions = {
 				staffOrders: 3
 			},
 			(result) => {
-				let staffMember: Staff = <Staff>map.getEntity(Number(result.peep));
+				let staffMember: Mechanic = <Mechanic>map.getEntity(Number(result.peep));
 				staffMember.colour = storage.parkStorage.get("colorFixer");
 				// weird, if position is 0, 0
 				if (staffMember.x < 32 && staffMember.y < 32) {
@@ -57,7 +57,7 @@ export const userActions = {
 		else if (name == "colorFixer")
 			storage.parkStorage.set("colorFixer", color);
 		for (let id in workers.data) {
-			let staffMember: Staff = <Staff>map.getEntity(Number(id));
+			let staffMember: Mechanic = <Mechanic>map.getEntity(Number(id));
 			if (name == "colorDefault" && !workers.data[id].isAdditionFixer)
 				staffMember.colour = color;
 			else if (name == "colorFixer" && workers.data[id].isAdditionFixer)
@@ -65,7 +65,7 @@ export const userActions = {
 		}
 	},
 	workersListViewItemsEdit(column: number, id: number) {
-		let staffMember: Staff = <Staff>map.getEntity(Number(id));
+		let staffMember: Mechanic = <Mechanic>map.getEntity(Number(id));
 		if (column == 0) {
 			// delete worker
 			if (deleteSelected) {
@@ -94,7 +94,7 @@ export const userActions = {
 	selectAll(index: number) {
 		selectAll[index] = !selectAll[index];
 		for (let id in workers.data) {
-			let staffMember: Staff = <Staff>map.getEntity(Number(id));
+			let staffMember: Mechanic = <Mechanic>map.getEntity(Number(id));
 			// inspectRides
 			if (index == 0) {
 				if (selectAll[index]) {

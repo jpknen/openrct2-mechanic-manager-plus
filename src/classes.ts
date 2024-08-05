@@ -1,7 +1,7 @@
 // classes.ts
 
 import { storage } from "./storage";
-import { newordersList } from "./conf"
+import { globals, newordersList } from "./conf"
 import { mainWin } from "./ui/mainwin";
 import { Release } from "./logic";
 
@@ -20,7 +20,6 @@ export enum StatusFR {
 	None,
 	Answering,
 	Heading,
-	//Inspecting,
 	Fixing
 }
 
@@ -81,17 +80,63 @@ export const occupiedTiles = new StorageHandler<OccupiedTile>("occupiedTiles", S
 export class StaffWindow {
 
 	private intervalTick: IDisposable | null = null;
-	private staffMember: Staff;
+	private staffMember: Mechanic;
 	private winName: string;
+
+	private pickUp: boolean = false;
 
 	public window: Window | null = null;
 
-	constructor(staffMember: Staff) {
+	constructor(staffMember: Mechanic) {
 		this.winName = staffMember.name + staffMember.id;
 		this.staffMember = staffMember;
 
 		this.createWindow();
 		this.updateWin();
+	}
+
+	private pickUpActionStart(): void {
+
+		this.pickUp = true;
+
+		Release(Number(this.staffMember.id));
+
+		this.staffMember.x = 0;
+		this.staffMember.y = 0;
+		this.staffMember.z = 0;
+		this.staffMember.setFlag("positionFrozen", true);
+		this.staffMember.setFlag("animationFrozen", true);
+
+		ui.activateTool({
+			id: "staff-pickup-tool",
+			cursor: "picker",
+			onMove(e) {
+				if (e.mapCoords !== undefined)
+					ui.tileSelection.tiles = [{ x: e.mapCoords.x, y: e.mapCoords.y }];
+			}, onDown: (e) => {
+				if (e.mapCoords !== undefined && e.tileElementIndex !== undefined) {
+					const tile: Tile = map.getTile(e.mapCoords.x / 32, e.mapCoords.y / 32);
+
+					this.staffMember.x = e.mapCoords.x + 16;
+					this.staffMember.y = e.mapCoords.y + 16;
+					this.staffMember.z = tile.elements[e.tileElementIndex].baseZ + 1;
+					this.staffMember.setFlag("positionFrozen", false);
+					this.staffMember.setFlag("animationFrozen", false);
+
+					this.pickUpActionEnd();
+
+					ui.tileSelection.tiles = [];
+				}
+			},
+		});
+
+	}
+
+	private pickUpActionEnd(): void {
+		if (ui.tool && ui.tool.id == "staff-pickup-tool") {
+			ui.tool.cancel();
+			this.pickUp = false;
+		}
 	}
 
 	private createWindow() {
@@ -130,17 +175,11 @@ export class StaffWindow {
 							x: 0, y: 137, width: 125, height: 15
 						},
 						{
-							type: "label",
-							name: "dest",
-							textAlign: "centred",
-							x: 0, y: 157, width: 125, height: 15
-						},
-						{
 							type: "button",
 							name: "pickup",
 							x: 126, y: 45, width: 23, height: 24,
 							image: 5174,
-							isDisabled: true
+							onClick: () => this.pickUpActionStart()
 						},
 						{
 							type: "button",
@@ -265,28 +304,38 @@ export class StaffWindow {
 					widgets: [
 						{
 							type: "label",
-							name: "fixedAdditions",
+							name: "inspectedRides",
 							x: 5, y: 48, width: 145, height: 10,
 						},
 						{
 							type: "label",
-							text: `Id: {BLACK}${this.staffMember.id}`,
+							name: "fixedRides",
 							x: 5, y: 48 + (10), width: 145, height: 10,
 						},
 						{
 							type: "label",
-							name: "dir",
+							name: "fixedAdditions",
 							x: 5, y: 48 + (10 * 2), width: 145, height: 10,
 						},
 						{
 							type: "label",
-							name: "pos",
+							name: "id",
 							x: 5, y: 48 + (10 * 3), width: 145, height: 10,
 						},
 						{
 							type: "label",
-							name: "dest",
+							name: "dir",
 							x: 5, y: 48 + (10 * 4), width: 145, height: 10,
+						},
+						{
+							type: "label",
+							name: "pos",
+							x: 5, y: 48 + (10 * 5), width: 145, height: 10,
+						},
+						{
+							type: "label",
+							name: "dest",
+							x: 5, y: 48 + (10 * 6), width: 145, height: 10,
 						}
 					]
 				}
@@ -295,17 +344,25 @@ export class StaffWindow {
 				delete staffWindows[Number(this.staffMember.id)];
 			}, onUpdate: () => {
 				if (this.window) {
-					this.window.title = this.staffMember.name;
-					if (this.window.tabIndex == 1) {
+					if (this.window.tabIndex == 0) {
+						this.window.title = this.staffMember.name;
+						this.window.findWidget<ButtonWidget>("pickup").isPressed = this.pickUp;
+					}
+					else if (this.window.tabIndex == 1) {
 						this.window.findWidget<CheckboxWidget>("inspectRides").isChecked = this.staffMember.orders & 1 ? true : false;
 						this.window.findWidget<CheckboxWidget>("fixRides").isChecked = this.staffMember.orders & 2 ? true : false;
 						this.window.findWidget<CheckboxWidget>("fixAdditions").isChecked = workers.data[Number(this.staffMember.id)].isAdditionFixer;
 					}
-					if (this.window.tabIndex == 2) {
-						this.window.findWidget<LabelWidget>("fixedAdditions").text = `Fixed additions: {BLACK}${workers.data[Number(this.staffMember.id)].fixedAdditions}`;
-						this.window.findWidget<LabelWidget>("dir").text = `Dir: {BLACK}${this.staffMember.direction}`;
-						this.window.findWidget<LabelWidget>("pos").text = `Pos: {BLACK}[x: ${this.staffMember.x / 32}, y: ${this.staffMember.y / 32}]`;
-						this.window.findWidget<LabelWidget>("dest").text = `Dest: {BLACK}[x: ${this.staffMember.destination.x / 32}, y: ${this.staffMember.destination.y / 32}]`;
+					else if (this.window.tabIndex == 2) {
+						this.window.findWidget<LabelWidget>("inspectedRides").text = `Rides inspected: {BLACK}${this.staffMember.ridesInspected}`;
+						this.window.findWidget<LabelWidget>("fixedRides").text = `Rides fixed: {BLACK}${this.staffMember.ridesFixed}`;
+						this.window.findWidget<LabelWidget>("fixedAdditions").text = `Additions fixed: {BLACK}${workers.data[Number(this.staffMember.id)].fixedAdditions}`;
+						if(globals.isDebug){
+							this.window.findWidget<LabelWidget>("id").text = `Id: {BLACK}${this.staffMember.id}`;
+							this.window.findWidget<LabelWidget>("dir").text = `Dir: {BLACK}${this.staffMember.direction}`;
+							this.window.findWidget<LabelWidget>("pos").text = `Pos: {BLACK}[x: ${Math.round(this.staffMember.x / 32 * 10) / 10}, y: ${Math.round(this.staffMember.y / 32 * 10) / 10}]`;
+							this.window.findWidget<LabelWidget>("dest").text = `Dest: {BLACK}[x: ${Math.round(this.staffMember.destination.y / 32 * 10) / 10}, y: ${Math.round(this.staffMember.destination.y / 32 * 10) / 10}]`;
+						}
 					}
 				}
 			}
@@ -315,7 +372,7 @@ export class StaffWindow {
 
 	}
 
-	private updateWin() {
+	private updateWin(): void {
 		this.intervalTick = context.subscribe("interval.tick", () => {
 
 			if (this.window && this.window.tabIndex == 0) {
@@ -342,9 +399,6 @@ export class StaffWindow {
 				if (statusFA == StatusFA.Fixing)
 					status = "Fixing addition";
 
-				//if (statusFR == StatusFR.Inspecting)
-				//status = "Inspecting ride";
-
 				if (statusFR == StatusFR.Fixing)
 					status = "Fixing ride";
 
@@ -358,7 +412,7 @@ export class StaffWindow {
 		});
 	}
 
-	public disposeWin() {
+	public disposeWin(): void {
 		this.intervalTick?.dispose();
 		this.intervalTick = null;
 	}

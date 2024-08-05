@@ -1,7 +1,7 @@
 // logic.ts
 
 import { animationsFixing, animationsPhone, repairDirs } from "./conf";
-import { workers, occupiedTiles, StaffWindow, staffWindows, StatusFA, StatusFR } from "./classes";
+import { workers, occupiedTiles, staffWindows, StatusFA, StatusFR } from "./classes";
 import { storage } from "./storage";
 import { mainWin } from "./ui/mainwin";
 
